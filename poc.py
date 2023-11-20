@@ -32,10 +32,7 @@ docs_and_scores = db.similarity_search_with_score(query)
 # print(embeddings.model_name)
 parsed_results = []
 for doc, score in docs_and_scores:
-        parsed_result = {
-            "content": doc.page_content,
-            "score": str(score)
-        }
-        parsed_results.append(parsed_result)
+    parsed_result = {"content": doc.page_content, "score": str(score)}
+    parsed_results.append(parsed_result)
 
 print(parsed_results)

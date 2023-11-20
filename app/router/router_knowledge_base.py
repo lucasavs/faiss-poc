@@ -23,9 +23,10 @@ async def create_knowledge_base(knowledge_base: Knowledge_base):
 async def delete_knowledge_base(knowledge_base: Knowledge_base):
     return controller_knowledge_base.delete_database(knowledge_base.name)
 
-@router.get("/knowledge_base/compare/{knowledge_base}", tags=["knowledge_baseknowledge_base"])
+
+@router.get(
+    "/knowledge_base/compare/{knowledge_base}", tags=["knowledge_baseknowledge_base"]
+)
 async def query_similar_documents(knowledge_base: str, query):
-    result = controller_knowledge_base.similarity_search(
-        knowledge_base, query
-    )
+    result = controller_knowledge_base.similarity_search(knowledge_base, query)
     return result

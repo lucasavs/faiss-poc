@@ -4,9 +4,10 @@ from langchain.schema import Document
 from fastapi import HTTPException
 
 
-def _check_database_status(database_name: str): # TODO turn this into a decorator
+def _check_database_status(database_name: str):  # TODO turn this into a decorator
     if database_name not in database_container:
         raise HTTPException(status_code=404, detail="knowledge base not found")
+
 
 def get_documents(database_name: str):
     _check_database_status(database_name)
@@ -32,6 +33,7 @@ def delete_document(database_name: str, document_index: str):
         db.delete([document_index])
     except (ValueError):
         raise HTTPException(status_code=404, detail="Value does not exist on database")
+
 
 def similarity_search(database_name: str, query: str):
     _check_database_status(database_name)

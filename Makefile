@@ -7,3 +7,6 @@ lint:
 
 beautify:
 	python3 -m black . --exclude /venv
+
+test:
+	python3 -m pytest
