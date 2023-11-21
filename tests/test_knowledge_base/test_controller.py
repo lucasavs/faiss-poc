@@ -43,3 +43,41 @@ class TestKnowledgeBaseController:
     def test_should_raise_exception_on_create_database(self):
         with raises(HTTPException) as exc_info:
             controller_knowledge_base.create_database("new_database")
+        assert isinstance(exc_info.value, HTTPException)
+        assert exc_info.value.status_code == 409
+        assert exc_info.value.detail == "database was already created"
+
+    @patch.dict("app.databases_holder.database_container", {})
+    def test_should_raise_exception_on_similarity_search_database_not_exist(self):
+        with raises(HTTPException) as exc_info:
+            controller_knowledge_base.similarity_search("new_database", "query")
+        assert isinstance(exc_info.value, HTTPException)
+        assert exc_info.value.status_code == 404
+        assert exc_info.value.detail == "database was not created"
+
+    mocked_exception_creating_databases = {"new_database": None}
+
+    @patch.dict(
+        "app.databases_holder.database_container", mocked_exception_creating_databases
+    )
+    def test_should_raise_exception_on_similarity_search_database_not_initialized(self):
+        with raises(HTTPException) as exc_info:
+            controller_knowledge_base.similarity_search("new_database", "query")
+        assert isinstance(exc_info.value, HTTPException)
+        assert exc_info.value.status_code == 400
+        assert exc_info.value.detail == "database was not initialized"
+
+    mocked_filled_database = MagicMock()
+    mocked_doc = MagicMock
+    mocked_doc.page_content = "banana"
+    mocked_filled_database.similarity_search_with_score.return_value = [
+        [mocked_doc, 1.2345]
+    ]
+
+    @patch.dict(
+        "app.databases_holder.database_container",
+        {"new_database": mocked_filled_database},
+    )
+    def test_should_return_similarity_search(self):
+        results = controller_knowledge_base.similarity_search("new_database", "query")
+        assert results == [{"content": "banana", "score": "1.2345"}]

@@ -14,9 +14,11 @@ def get_databases():
 
 def create_database(name: str):
     if name in database_container:
-        raise HTTPException(status_code=409, detail="database is already created")
+        raise HTTPException(status_code=409, detail="database was already created")
     else:
-        database_container[name] = None  # starts with an empty database
+        database_container[
+            name
+        ] = None  # This is a way to identify if the database was initialized or not
 
 
 def delete_database(name: str):
@@ -28,8 +30,10 @@ def delete_database(name: str):
 
 def similarity_search(name: str, query: str):
     if name not in database_container:
-        raise HTTPException(status_code=404, detail="database is not created")
+        raise HTTPException(status_code=404, detail="database was not created")
     db = database_container[name]
+    if db is None:
+        raise HTTPException(status_code=400, detail="database was not initialized")
     parsed_results = []
     results_with_scores = db.similarity_search_with_score(query)
 
@@ -38,7 +42,7 @@ def similarity_search(name: str, query: str):
             "content": doc.page_content,
             "score": str(
                 score
-            ),  # we need to convert score to a foramt that fastAPI can parse
+            ),  # we need to convert score to a format that fastAPI can parse
         }
         parsed_results.append(parsed_result)
     return parsed_results

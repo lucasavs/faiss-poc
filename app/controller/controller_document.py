@@ -9,11 +9,6 @@ def _check_database_status(database_name: str):  # TODO turn this into a decorat
         raise HTTPException(status_code=404, detail="knowledge base not found")
 
 
-def get_documents(database_name: str):
-    _check_database_status(database_name)
-    return database_container[database_name].__dict__
-
-
 def add_document(database_name: str, payload: str):
     _check_database_status(database_name)
     doc = Document(page_content=payload, metadata={"source": "local"})
@@ -33,9 +28,3 @@ def delete_document(database_name: str, document_index: str):
         db.delete([document_index])
     except (ValueError):
         raise HTTPException(status_code=404, detail="Value does not exist on database")
-
-
-def similarity_search(database_name: str, query: str):
-    _check_database_status(database_name)
-    db = database_container[database_name]
-    return db.similarity_search_with_score(query)
